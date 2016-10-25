@@ -5,9 +5,20 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.tby.test1.MainActivity">
+    tools:context="com.example.tby.newsdoor.MainActivity">
 
-
+    <ImageView
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="今日头条"
+        android:typeface="sans"
+        android:textSize="25sp"
+        android:gravity="center"
+        />
     <ListView
         android:id="@+id/list1"
         android:layout_width="match_parent"

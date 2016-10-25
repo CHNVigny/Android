@@ -1,4 +1,4 @@
-package com.example.tby.test1;
+package com.example.tby.newsdoor;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,11 +15,6 @@ public class MainActivity extends AppCompatActivity {
     private String[] url={"http://www.baidu.com","http://www.icourse163.org"};
     private List<myBean>bean;
     private ListView li;
-    int [] arr=new int[]{
-            R.drawable.address_book,R.drawable.calendar,R.drawable.camera,R.drawable.clock,
-            R.drawable.games_control,R.drawable.ic_launcher,R.drawable.messenger,R.drawable.ringtone,
-            R.drawable.settings,R.drawable.speech_balloon,R.drawable.weather,R.drawable.youtube
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
        // startActivity(intent);
 
         bean=new ArrayList<myBean>();
-        for(int i=0;i<arr.length;i++){
-            myBean mb=new myBean(arr[i],
+        for(int i=0;i<20;i++){
+            myBean mb=new myBean(R.mipmap.ic_launcher,
                     "我是第"+i+"行 标题",
                     "我是第"+i+"行 内容");
             bean.add(mb);

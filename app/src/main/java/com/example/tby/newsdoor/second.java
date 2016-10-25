@@ -1,4 +1,4 @@
-package com.example.tby.test1;
+package com.example.tby.newsdoor;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
 
 /**
  * Created by tby on 2016/10/19.

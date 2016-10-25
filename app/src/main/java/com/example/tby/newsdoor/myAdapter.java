@@ -1,4 +1,4 @@
-package com.example.tby.test1;
+package com.example.tby.newsdoor;
 
 import android.content.Context;
 import android.view.LayoutInflater;
