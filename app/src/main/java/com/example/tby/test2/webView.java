@@ -12,6 +12,10 @@ import android.webkit.WebViewClient;
 /**
  * Created by tby on 2016/10/19.
  */
+ /*
+ 这次的WebView只能够达到进行网页浏览，获取数据的基本能力，无法真正的读取视频
+ 
+ */
 
 public class webView extends AppCompatActivity {
 
