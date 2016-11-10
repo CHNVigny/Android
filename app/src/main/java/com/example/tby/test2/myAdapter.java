@@ -31,11 +31,13 @@ public class myAdapter extends BaseAdapter implements AbsListView.OnScrollListen
     private LayoutInflater in;
     private boolean mIsListViewIdle = true;
     private ListView mlistview;
-    public myAdapter(List<Bean> beanList,Context i,ListView listView){
+    private ImageLoader imageLoader;
+    public myAdapter(List<Bean> beanList,Context i,ListView listView,ImageLoader imageLoader){
         this.beanList=beanList;
         in= LayoutInflater.from(i);
         this.mlistview=listView;
         mlistview.setOnScrollListener(this);
+        this.imageLoader=imageLoader;
     }
 
     @Override
@@ -54,32 +56,91 @@ public class myAdapter extends BaseAdapter implements AbsListView.OnScrollListen
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public int getViewTypeCount() {
+        return 2;
+    }
 
-        view v;
+    @Override
+    public int getItemViewType(int position) {
+        int p = position;
+        if (p == 0)
+            return 0;
+        else return 1;
+
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        int type=getItemViewType(position);
+        view v=null;
+        view1 v1=null;
         if(convertView==null){
-            convertView=in.inflate(R.layout.listviewitem,null);
-            v=new view();
-            v.pb= (ProgressBar) convertView.findViewById(R.id.pb1);
-            v.textView1= (TextView) convertView.findViewById(R.id.tv1);
-            v.textView2= (TextView) convertView.findViewById(R.id.tv2);
-            v.textView3= (TextView) convertView.findViewById(R.id.tv3);
-            v.iv= (ImageView) convertView.findViewById(R.id.iv);
-            convertView.setTag(v);
+
+            switch (type){
+            case 1:
+                convertView=in.inflate(R.layout.listviewitem,parent,false);
+                v=new view();
+                v.pb= (ProgressBar) convertView.findViewById(R.id.pb1);
+                v.textView1= (TextView) convertView.findViewById(R.id.tv1);
+                v.textView2= (TextView) convertView.findViewById(R.id.tv2);
+                v.textView3= (TextView) convertView.findViewById(R.id.tv3);
+                v.iv= (ImageView) convertView.findViewById(R.id.iv);
+                convertView.setTag(v);
+                break;
+            case 0:
+                convertView=in.inflate(R.layout.item2,parent,false);
+                v1=new view1();
+                v1.pb= (ProgressBar) convertView.findViewById(R.id.pb21);
+                v1.textView1= (TextView) convertView.findViewById(R.id.text1);
+                v1.iv= (ImageView) convertView.findViewById(R.id.img1);
+                convertView.setTag(v1);
+                break;
+            }
         }
         else{
-            v= (view) convertView.getTag();
+            switch (type){
+                case 1:
+                    v= (view) convertView.getTag();break;
+                case 0:
+                    v1= (view1) convertView.getTag();break;
+            }
         }
+        switch (type){
+            case 1:
+                if(beanList.get(position).imgurl!=null) {
+                    imageLoader.showImageByThreads(v.iv, beanList.get(position).imgurl, v.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
+                    //Log.d("imgurl",beanList.get(position).imgurl);
+                }//Log.d("imgurl",beanList.get(position).imgurl);
+                //setImg(v.iv,v.pb,beanList.get(position).imgurl);
+                //v.iv.setImageResource(bean.get(position).imgId);
+                v.textView3.setText(beanList.get(position).src);
+                v.textView1.setText(beanList.get(position).title);
+                v.textView2.setText(beanList.get(position).content);
+                return convertView;
+            case 0:
+                if(beanList.get(position).imgurl!=null) {
+                    imageLoader.showImageByThreads(v1.iv, beanList.get(position).imgurl, v1.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
+                    Log.d("imgurl",beanList.get(position).imgurl);
+                }//Log.d("imgurl",beanList.get(position).imgurl);
+                //setImg(v.iv,v.pb,beanList.get(position).imgurl);
+                //v.iv.setImageResource(bean.get(position).imgId);
+                v1.textView1.setText(beanList.get(position).title);
+                return convertView;
+        }
+        return convertView;
         //if(mIsListViewIdle)
-        new ImageLoader().showImageByThreads(v.iv,beanList.get(position).imgurl,v.pb,beanList.get(position).title);
-        Log.d("imgurl",beanList.get(position).imgurl);
+/*        if(beanList.get(position).imgurl!=null) {
+            imageLoader.showImageByThreads(v.iv, beanList.get(position).imgurl, v.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
+            Log.d("imgurl",beanList.get(position).imgurl);
+        }//Log.d("imgurl",beanList.get(position).imgurl);
         //setImg(v.iv,v.pb,beanList.get(position).imgurl);
         //v.iv.setImageResource(bean.get(position).imgId);
         v.textView3.setText(beanList.get(position).src);
         v.textView1.setText(beanList.get(position).title);
         v.textView2.setText(beanList.get(position).content);
         return convertView;
-    }
+*/
+        }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -98,6 +159,11 @@ public class myAdapter extends BaseAdapter implements AbsListView.OnScrollListen
 
     class view{
         public TextView textView1,textView2,textView3;
+        public ProgressBar pb;
+        public ImageView iv;
+    }
+    class view1{
+        public TextView textView1;
         public ProgressBar pb;
         public ImageView iv;
     }

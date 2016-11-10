@@ -10,7 +10,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String[] title={"要闻","军事","娱乐","搞笑","天气"};
+    private String[] title={"国内","国际","军事","互联网","体育","娱乐","社会"};
     private ViewPager viewPager;
     private List<fragmentNews>fragList;
     private TabLayout tab1;
@@ -28,15 +28,15 @@ public class MainActivity extends AppCompatActivity {
         tab1= (TabLayout) findViewById(R.id.tab1);
         tab1.setTabMode(TabLayout.MODE_SCROLLABLE);
         fragList=new ArrayList<fragmentNews>();
-
         List<String>tit=new ArrayList<String>();
+        int i=0;
         for(String s:title){
             tit.add(s);
             Bundle bundle=new Bundle();
             bundle.putString("kind",s);
-
-            fragmentNews f=new fragmentNews();
+            fragmentNews f=new fragmentNews(i);
             f.setArguments(bundle);
+            i++;
             fragList.add(f);
         }
         myPagerAdapter pagerAdapter=new myPagerAdapter(getSupportFragmentManager(),fragList,tit);

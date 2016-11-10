@@ -39,6 +39,9 @@ public class ImageLoader {
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final long KEEP_ALIVE = 10L;
 
+
+
+
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
@@ -75,7 +78,7 @@ public class ImageLoader {
     public ImageLoader() {
         //可使用的最大内存，转换成KB
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        int cacheSize = maxMemory / 4;
+        int cacheSize = maxMemory / 8;
         mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
             protected int sizeOf(String key, Bitmap value) {
@@ -100,13 +103,37 @@ public class ImageLoader {
      * @param imageView
      * @param urlString
      */
+    public void showImageByThreads(final ImageView imageView, final String urlString, final ProgressBar pb,final String i,final int width,final int height) {
+        l=i;
+        Runnable loadBitmapTask = new Runnable() {
+            @Override
+            public void run() {
+                imageView.setTag(urlString);
+                Bitmap bitmap = loadBitmap(urlString,width,height);
+                if (bitmap != null) {
+                    //将对应的imageView,url,bitmap封装成一个对象，然后将对象传入Handler
+                    LoaderResult result = new LoaderResult(imageView, urlString, bitmap,pb);
+                    mMainHandler.obtainMessage(MESSAGE_POST_RESULT, result).sendToTarget();
+
+                }
+            }
+        };
+        THREAD_POOL_EXECUTOR.execute(loadBitmapTask);
+    }
+
+    /**
+     * 这边我考虑使用线程池，而不是使用线程的方法
+     *
+     * @param imageView
+     * @param urlString
+     */
     public void showImageByThreads(final ImageView imageView, final String urlString, final ProgressBar pb,final String i) {
         l=i;
         Runnable loadBitmapTask = new Runnable() {
             @Override
             public void run() {
                 imageView.setTag(urlString);
-                Bitmap bitmap = loadBitmap(urlString);
+                Bitmap bitmap = loadBitmap(urlString,0,0);
                 if (bitmap != null) {
                     //将对应的imageView,url,bitmap封装成一个对象，然后将对象传入Handler
                     LoaderResult result = new LoaderResult(imageView, urlString, bitmap,pb);
@@ -142,7 +169,7 @@ public class ImageLoader {
 
         @Override
         protected Bitmap doInBackground(String... params) {
-            return loadBitmap(params[0]);
+            return loadBitmap(params[0],0,0);
         }
 
         //在主线程中操作，设置图片
@@ -164,14 +191,14 @@ public class ImageLoader {
      * @param urlString
      * @return
      */
-    private Bitmap loadBitmap(String urlString) {
+    private Bitmap loadBitmap(String urlString,int width,int height) {
         Bitmap bitmap = loadBitmapFromMemoryCache(urlString);
         if (bitmap != null) {
             Log.d("gy", "loadBitmapFromMemoryCache,url:" + urlString);
             return bitmap;
         }
         else{
-            bitmap = loadBitmapFromHttp(urlString);
+            bitmap = loadBitmapFromHttp(urlString,width,height);
             addBitmapToMemoryCache(hashKeyFromUrl(urlString),bitmap);
         }
 
@@ -180,7 +207,7 @@ public class ImageLoader {
 
     //从网络中加载
     //主要的操作还是Java IO流，源：urlString，目的：Bitmap
-    private Bitmap loadBitmapFromHttp(String urlString) {
+    private Bitmap loadBitmapFromHttp(String urlString,int width,int height) {
 
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new RuntimeException("can not visit network from UI Thread.");
@@ -191,8 +218,9 @@ public class ImageLoader {
             HttpURLConnection
                     urlConnection = (HttpURLConnection) url.openConnection();
             BufferedInputStream bufIn = new BufferedInputStream(urlConnection.getInputStream());
-            Bitmap bitmap = BitmapFactory.decodeStream(bufIn);
-
+            Bitmap bitmap = //BitmapFactory.decodeStream(bufIn);
+            decodeSampledBitmapFromFile(urlString,width,height,
+            80, 80);
              Log.d("urlString",l+urlString);
            // Bitmap bitmap=decodeSampledBitmapFromFile(urlString,
            // 80, 80);
@@ -210,37 +238,36 @@ public class ImageLoader {
      * @param reqHeight
      * @return 一个设定好属性的Bitmap对象
      */
-    public static Bitmap decodeSampledBitmapFromFile(String imgurl,
+    public static Bitmap decodeSampledBitmapFromFile(String imgurl,int width,int height,
                                                      int reqWidth, int reqHeight) throws IOException {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        InputStream is=new URL(imgurl).openStream();
+        InputStream is;//=new URL(imgurl).openStream();
+        /*options.inJustDecodeBounds = true;
+
         Log.d("img","jiazai");
-        BitmapFactory.decodeStream(is,null, options);
+        BitmapFactory.decodeStream(is,null, options);*/
 
         // Calculate inSampleSize 计算大小
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = calculateInSampleSize(height,width, reqWidth, reqHeight);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        is.close();
+
         is=new URL(imgurl).openStream();
         return BitmapFactory.decodeStream(is,null,options);
     }
     /**
      * 计算实际的采样率
-     * @param options
      * @param reqWidth 设定的宽度
      * @param reqHeight 设定的高度
      * @return 一个压缩的比例
      */
-    public static int calculateInSampleSize(BitmapFactory.Options options,
+    public static int calculateInSampleSize(int height,int width,
                                             int reqWidth, int reqHeight) {
         // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
+
         int inSampleSize = 1;
 
         if (height > reqHeight || width > reqWidth) {
@@ -292,6 +319,7 @@ public class ImageLoader {
         private String url;
         private Bitmap bitmap;
         private ProgressBar pb;
+        private int width,height;
         public LoaderResult(ImageView imageView, String url, Bitmap bitmap,ProgressBar pb) {
             this.imageView = imageView;
             this.url = url;

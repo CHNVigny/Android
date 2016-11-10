@@ -33,14 +33,28 @@ public class fragmentNews extends Fragment {
     private ListView listView;
     private myAdapter adapter;
     private List<Bean>beanList;
+    private String[] title={"国内","国际","军事","互联网","体育","娱乐","社会"};
+    private String[] channelId={"5572a108b3cdc86cf39001cd","5572a108b3cdc86cf39001ce","5572a108b3cdc86cf39001cf",
+            "5572a108b3cdc86cf39001d1","5572a108b3cdc86cf39001d4","5572a108b3cdc86cf39001d5","5572a109b3cdc86cf39001da"};
+private ImageLoader imageLoader;
 
+    public fragmentNews(){
+        super();
+        imageLoader=new ImageLoader();
+
+    }
+    public fragmentNews(int i){
+        super();
+        imageLoader=new ImageLoader();
+        kind=channelId[i];
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view=inflater.inflate(R.layout.news,container,false);
-        kind=getArguments().getString("kind")+"";
+        //kind=getArguments().getString("kind")+"";
         listView= (ListView) view.findViewById(R.id.listview);
         if(beanList==null)init();
         return view;
@@ -48,7 +62,6 @@ public class fragmentNews extends Fragment {
 
     private void init(){
         beanList=new ArrayList<Bean>();
-
     }
 
     @Override
@@ -58,20 +71,54 @@ public class fragmentNews extends Fragment {
             if (beanList == null)
                 init();
             ans a = new ans(listView, adapter,this.getContext());
-            a.execute("http://www.imooc.com/api/teacher?type=4&num=30");
-
+            a.execute(kind);
         }
     }
+    List<Bean> getBeanList(String kind){
+        GetNewsApi getNewsApi=new GetNewsApi();
+        String s=getNewsApi.request(kind);
+        Log.d("getJSON",s);
+        List<Bean> myB=new ArrayList<Bean>();
+        try {
 
+            JSONObject jo=new JSONObject(s);
+            jo=jo.getJSONObject("showapi_res_body");
+            jo=jo.getJSONObject("pagebean");
+            JSONArray data=jo.getJSONArray("contentlist");
+            for(int i=0;i<data.length();i++){
+                JSONObject j1=data.getJSONObject(i);
+                boolean haveimg=j1.getBoolean("havePic");
+                JSONArray img=j1.getJSONArray("imageurls");
+                String imgUrl=null;
+                int width;
+                String title=j1.getString("title");
+                String source=j1.getString("source");
+                String link=j1.getString("link");
+                String desc=j1.getString("desc");
+                Bean mb=new Bean(imgUrl,title,
+                        desc,link,source);
+                if(haveimg){
+                    imgUrl=img.getJSONObject(0).getString("url");
+                    mb.setImgurl(imgUrl);
+                    mb.setWidth(img.getJSONObject(0).getInt("width"));
+                    mb.setWidth(img.getJSONObject(0).getInt("height"));
+                }
+                myB.add(mb);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return myB;
+
+    }
     List<Bean> getBean(String url){
 
         List<Bean> myB=new ArrayList<Bean>();
         String r="";
         try {
-
             BufferedReader
-                    br=
-                    new BufferedReader(new InputStreamReader(
+                    br= new BufferedReader(new InputStreamReader(
                             new URL(url).openStream(),"utf-8"));
             String line;
             while ((line=br.readLine())!=null){
@@ -123,7 +170,7 @@ public class fragmentNews extends Fragment {
         }
         @Override
         protected List<Bean> doInBackground(String... params) {
-            List<Bean> bean1=getBean(params[0]);
+            List<Bean> bean1=getBeanList(params[0]);
             beanList=bean1;
             return bean1;
         }
@@ -133,7 +180,7 @@ public class fragmentNews extends Fragment {
         protected void onPostExecute(List<Bean> myBeen) {
             super.onPostExecute(myBeen);
             if(listView!=null){
-                ma=new myAdapter(myBeen,context,listView);
+                ma=new myAdapter(myBeen,context,listView,imageLoader);
                 listView.setAdapter(ma);
                 Log.d("img","jiazai");
                 listView.setOnItemClickListener(new listener());

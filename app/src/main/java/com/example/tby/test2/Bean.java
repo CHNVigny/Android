@@ -5,7 +5,7 @@ package com.example.tby.test2;
  */
 
 public class Bean {
-    String imgurl;String title;String content;String url,src;
+    String imgurl=null;String title;String content;String url,src;int height;int width;
     public Bean(String imgurl,String title,String content,String url,String src){
         this.content=content;
         this.imgurl=imgurl;
@@ -14,4 +14,27 @@ public class Bean {
         this.src=src;
     }
 
+    public void setImgurl(String imgurl) {
+        this.imgurl = imgurl;
+    }
+
+    public String getImgurl() {
+        return imgurl;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getWidth() {
+        return width;
+    }
 }
