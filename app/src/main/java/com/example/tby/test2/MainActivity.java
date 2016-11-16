@@ -1,5 +1,7 @@
 package com.example.tby.test2;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -11,6 +13,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private String[] title={"国内","国际","军事","互联网","体育","娱乐","社会"};
+    private SQLiteDatabase db;
     private ViewPager viewPager;
     private List<fragmentNews>fragList;
     private TabLayout tab1;
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         tab.setTabIndicatorColor(Color.BLUE);
         tab.setDrawFullUnderline(true);
         tab.setTextColor(Color.RED);*/
+        db=openOrCreateDatabase("bitmap.db", Context.MODE_PRIVATE,null);
         tab1= (TabLayout) findViewById(R.id.tab1);
         tab1.setTabMode(TabLayout.MODE_SCROLLABLE);
         fragList=new ArrayList<fragmentNews>();
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             tit.add(s);
             Bundle bundle=new Bundle();
             bundle.putString("kind",s);
-            fragmentNews f=new fragmentNews(i);
+            fragmentNews f=new fragmentNews(i,db);
             f.setArguments(bundle);
             i++;
             fragList.add(f);

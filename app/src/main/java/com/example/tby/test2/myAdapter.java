@@ -1,15 +1,15 @@
 package com.example.tby.test2;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -25,19 +25,20 @@ import java.util.List;
  * Created by tby on 2016/10/30.
  */
 
-public class myAdapter extends BaseAdapter implements AbsListView.OnScrollListener
+public class myAdapter extends BaseAdapter
 {
     private List<Bean> beanList;
     private LayoutInflater in;
     private boolean mIsListViewIdle = true;
     private ListView mlistview;
     private ImageLoader imageLoader;
-    public myAdapter(List<Bean> beanList,Context i,ListView listView,ImageLoader imageLoader){
+    private  SQLiteDatabase db;
+    public myAdapter(List<Bean> beanList, Context i, ListView listView, ImageLoader imageLoader, SQLiteDatabase db){
         this.beanList=beanList;
         in= LayoutInflater.from(i);
         this.mlistview=listView;
-        mlistview.setOnScrollListener(this);
         this.imageLoader=imageLoader;
+        this.db=db;
     }
 
     @Override
@@ -105,12 +106,22 @@ public class myAdapter extends BaseAdapter implements AbsListView.OnScrollListen
                     v1= (view1) convertView.getTag();break;
             }
         }
+
+        Cursor c;byte[]b;
         switch (type){
             case 1:
-                if(beanList.get(position).imgurl!=null) {
-                    imageLoader.showImageByThreads(v.iv, beanList.get(position).imgurl, v.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
+                c=db.rawQuery("SELECT * from list2 where imgurl like '"+beanList.get(position).imgurl+"'",null);
+
+                if(c.moveToNext()&&(b=c.getBlob(c.getColumnIndex("img")))!=null){
+                    v.iv.setImageBitmap(BitmapFactory.decodeByteArray(b,0,b.length));
+                    v.pb.setVisibility(View.GONE);
+                }
+                //if(beanList.get(position).imgurl!=null) {
+                else
+                    if(imageLoader!=null)
+                        imageLoader.showImageByThreads(v.iv, beanList.get(position).imgurl, v.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
                     //Log.d("imgurl",beanList.get(position).imgurl);
-                }//Log.d("imgurl",beanList.get(position).imgurl);
+                //}//Log.d("imgurl",beanList.get(position).imgurl);
                 //setImg(v.iv,v.pb,beanList.get(position).imgurl);
                 //v.iv.setImageResource(bean.get(position).imgId);
                 v.textView3.setText(beanList.get(position).src);
@@ -118,10 +129,16 @@ public class myAdapter extends BaseAdapter implements AbsListView.OnScrollListen
                 v.textView2.setText(beanList.get(position).content);
                 return convertView;
             case 0:
-                if(beanList.get(position).imgurl!=null) {
-                    imageLoader.showImageByThreads(v1.iv, beanList.get(position).imgurl, v1.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
-                    Log.d("imgurl",beanList.get(position).imgurl);
-                }//Log.d("imgurl",beanList.get(position).imgurl);
+                c=db.rawQuery("SELECT * from list2 where imgurl like '"+beanList.get(position).imgurl+"'",null);
+                if(c.moveToNext()&&(b=c.getBlob(c.getColumnIndex("img")))!=null){
+                    v1.iv.setImageBitmap(BitmapFactory.decodeByteArray(b,0,b.length));
+                    v1.pb.setVisibility(View.GONE);
+                }
+                //if(beanList.get(position).imgurl!=null) {
+                else
+                if(imageLoader!=null)
+                    imageLoader.showImageByThreads(v1.iv, beanList.get(position).imgurl,
+                            v1.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
                 //setImg(v.iv,v.pb,beanList.get(position).imgurl);
                 //v.iv.setImageResource(bean.get(position).imgId);
                 v1.textView1.setText(beanList.get(position).title);
@@ -142,7 +159,7 @@ public class myAdapter extends BaseAdapter implements AbsListView.OnScrollListen
 */
         }
 
-    @Override
+ /*   @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
             mIsListViewIdle = true;
@@ -155,7 +172,7 @@ public class myAdapter extends BaseAdapter implements AbsListView.OnScrollListen
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-    }
+    }*/
 
     class view{
         public TextView textView1,textView2,textView3;

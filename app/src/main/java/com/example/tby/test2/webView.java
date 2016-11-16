@@ -27,8 +27,9 @@ public class webView extends AppCompatActivity {
         setContentView(R.layout.web);
         url=this.getIntent().getExtras().getString("url");
         webView1 = (WebView) findViewById(R.id.web);
-        Log.d("url",url);
+        //Log.d("url",url);
         webView1.loadUrl(url);
+        Log.d("url",url);
        // webView1.loadUrl(url);
     // 覆盖WebView默认通过第三方或者是系统浏览器打开网页的行为，使得网页可以在WebVIew中打开
         webView1.setWebViewClient(new WebViewClient(){
@@ -47,7 +48,7 @@ public class webView extends AppCompatActivity {
     WebSettings settings = webView1.getSettings();
     settings.setJavaScriptEnabled(true);
     //WebView加载页面优先使用缓存加载
-    settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+    //settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
     webView1.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -90,9 +91,6 @@ public class webView extends AppCompatActivity {
 
     }
 
-
-
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
@@ -107,7 +105,7 @@ public class webView extends AppCompatActivity {
                 return true;
             }
             else if(webView1.canGoBack()){
-                webView1.goBack();this.finish();return true;
+                webView1.goBack();this.finish();System.exit(0);return true;
             }
             else
             {

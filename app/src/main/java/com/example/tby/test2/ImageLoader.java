@@ -1,5 +1,7 @@
 package com.example.tby.test2;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -13,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -38,7 +41,7 @@ public class ImageLoader {
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final long KEEP_ALIVE = 10L;
-
+    private SQLiteDatabase db;
 
 
 
@@ -65,7 +68,7 @@ public class ImageLoader {
             if (url.equals(result.url)) {
                 imageView.setImageBitmap(result.bitmap);
                 result.pb.setVisibility(View.GONE);
-                Log.d("gy1", "set!"+l);
+                //Log.d("gy1", "set!"+l);
             } else {
                 Log.d("gy", "when set image bitmap, but url has changed!");
             }
@@ -85,6 +88,19 @@ public class ImageLoader {
                 return value.getByteCount();
             }
         };
+    }
+
+    public ImageLoader(SQLiteDatabase db) {
+        //可使用的最大内存，转换成KB
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        int cacheSize = maxMemory / 8;
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount();
+            }
+        };
+        this.db=db;
     }
 
     public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
@@ -184,7 +200,8 @@ public class ImageLoader {
 
 
     /**
-     * 加载图片，先不考虑磁盘，我估计手机有问题，因为我前面使用我封装好的ImageLoader，说是找不到file
+     * 加载图片，先不考虑磁盘，我估计手机有问题，因为我前面使用我封装好的
+     * ImageLoader，说是找不到file
      * 1.从内存中加载
      * 2.内存中若是没有，则从网上加载
      *
@@ -221,6 +238,13 @@ public class ImageLoader {
             Bitmap bitmap = //BitmapFactory.decodeStream(bufIn);
             decodeSampledBitmapFromFile(urlString,width,height,
             80, 80);
+
+            ContentValues values = new ContentValues();
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            values.put("img",os.toByteArray());//key为字段名，value为值
+            db.update("list2", values, "imgurl like ?", new String[]{urlString});
+
              Log.d("urlString",l+urlString);
            // Bitmap bitmap=decodeSampledBitmapFromFile(urlString,
            // 80, 80);
