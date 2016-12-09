@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+    <item
+        android:title="收藏夹"
+        android:id="@+id/action_open"
+        android:orderInCategory="1"
+        app:showAsAction="never"/>
+  <item
+    android:id="@+id/action_new"
+    android:orderInCategory="2"
+    android:title="喜好"
+    app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_del"
+        android:orderInCategory="3"
+        android:title="简版浏览"
+        app:showAsAction="never"/>
+ </menu>

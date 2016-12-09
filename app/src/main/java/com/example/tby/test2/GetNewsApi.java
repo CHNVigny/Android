@@ -14,9 +14,6 @@ import java.net.URL;
 
 public class GetNewsApi {
 
-    //String httpArg = "channelId=5572a109b3cdc86cf39001db&channelName=%E5%9B%BD%E5%86%85%E6%9C%80%E6%96%B0&title=%E4%B8%8A%E5%B8%82&page=1&needContent=0&needHtml=0";
-
-
     /**
 
      * @return 返回结果
@@ -37,6 +34,7 @@ public class GetNewsApi {
 
         try {
             URL url = new URL(httpUrl);
+            //URL url = new URL("http://192.168.0.2:8080/hello/refresh?status=122&kind=1");
             HttpURLConnection connection = (HttpURLConnection) url
                     .openConnection();
             connection.setRequestMethod("GET");
@@ -54,10 +52,9 @@ public class GetNewsApi {
             result = sbf.toString();
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return result;
     }
-
-
 
 }

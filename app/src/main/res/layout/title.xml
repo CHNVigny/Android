@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:background="#6699ff"
+    android:layout_height="80dp">
+<TextView
+    android:layout_width="1dp"
+    android:layout_weight="1"
+    android:id="@+id/textTile"
+    android:layout_height="80dp"
+    ></TextView>
+    <Button
+        android:id="@+id/titleBtn"
+        android:text="选项"
+        android:textSize="25sp"
+        android:background="#bfbfbf"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textColor="#000000"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

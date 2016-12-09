@@ -5,13 +5,9 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     tools:context="com.example.tby.test2.MainActivity">
-
+    <include layout="@layout/title"></include>
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab1"
@@ -19,8 +15,10 @@
         android:scrollbarSize="80dp"
         android:layout_height="30dp"
         app:tabTextColor="#000000"
+        app:tabIndicatorColor="@color/colorPrimary"
         app:tabTextAppearance="@style/TabLayoutTextStyle"
         app:tabSelectedTextColor="@color/red"
+
         app:tabGravity="fill"
         app:tabIndicatorHeight="1dp"
 

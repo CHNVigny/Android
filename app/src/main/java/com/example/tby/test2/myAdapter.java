@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,15 +59,20 @@ public class myAdapter extends BaseAdapter
 
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return 3;
     }
 
     @Override
     public int getItemViewType(int position) {
-        int p = position;
-        if (p == 0)
+        if (position == 0)
             return 0;
-        else return 1;
+        int p = beanList.get(position).getImgnum();
+
+
+        switch (p){
+            case 0:return 2;
+            default:return 1;
+        }
 
     }
 
@@ -75,6 +81,7 @@ public class myAdapter extends BaseAdapter
         int type=getItemViewType(position);
         view v=null;
         view1 v1=null;
+        view2 v2=null;
         if(convertView==null){
 
             switch (type){
@@ -96,6 +103,16 @@ public class myAdapter extends BaseAdapter
                 v1.iv= (ImageView) convertView.findViewById(R.id.img1);
                 convertView.setTag(v1);
                 break;
+
+            case 2:
+                convertView=in.inflate(R.layout.itemnull,parent,false);
+                v2=new view2();
+                v2.textView1= (TextView) convertView.findViewById(R.id.tv1);
+                v2.textView2= (TextView) convertView.findViewById(R.id.tv2);
+                v2.textView3= (TextView) convertView.findViewById(R.id.tv3);
+                //v1.iv= (ImageView) convertView.findViewById(R.id.img1);
+                convertView.setTag(v2);
+                break;
             }
         }
         else{
@@ -104,6 +121,8 @@ public class myAdapter extends BaseAdapter
                     v= (view) convertView.getTag();break;
                 case 0:
                     v1= (view1) convertView.getTag();break;
+                case 2:
+                    v2= (view2) convertView.getTag();break;
             }
         }
 
@@ -115,15 +134,16 @@ public class myAdapter extends BaseAdapter
                 if(c.moveToNext()&&(b=c.getBlob(c.getColumnIndex("img")))!=null){
                     v.iv.setImageBitmap(BitmapFactory.decodeByteArray(b,0,b.length));
                     v.pb.setVisibility(View.GONE);
+                    c.close();
                 }
+
                 //if(beanList.get(position).imgurl!=null) {
-                else
-                    if(imageLoader!=null)
+                else {
+                    c.close();
+                    Log.d("urlString", beanList.get(position).imgurl);
+                    if (imageLoader != null)
                         imageLoader.showImageByThreads(v.iv, beanList.get(position).imgurl, v.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
-                    //Log.d("imgurl",beanList.get(position).imgurl);
-                //}//Log.d("imgurl",beanList.get(position).imgurl);
-                //setImg(v.iv,v.pb,beanList.get(position).imgurl);
-                //v.iv.setImageResource(bean.get(position).imgId);
+                }
                 v.textView3.setText(beanList.get(position).src);
                 v.textView1.setText(beanList.get(position).title);
                 v.textView2.setText(beanList.get(position).content);
@@ -143,20 +163,15 @@ public class myAdapter extends BaseAdapter
                 //v.iv.setImageResource(bean.get(position).imgId);
                 v1.textView1.setText(beanList.get(position).title);
                 return convertView;
+            case 2:
+                v2.textView3.setText(
+                        beanList.get(position).src);
+                v2.textView1.setText(beanList.get(position).title);
+                v2.textView2.setText(beanList.get(position).content);
+                return convertView;
         }
         return convertView;
-        //if(mIsListViewIdle)
-/*        if(beanList.get(position).imgurl!=null) {
-            imageLoader.showImageByThreads(v.iv, beanList.get(position).imgurl, v.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
-            Log.d("imgurl",beanList.get(position).imgurl);
-        }//Log.d("imgurl",beanList.get(position).imgurl);
-        //setImg(v.iv,v.pb,beanList.get(position).imgurl);
-        //v.iv.setImageResource(bean.get(position).imgId);
-        v.textView3.setText(beanList.get(position).src);
-        v.textView1.setText(beanList.get(position).title);
-        v.textView2.setText(beanList.get(position).content);
-        return convertView;
-*/
+
         }
 
  /*   @Override
@@ -183,6 +198,9 @@ public class myAdapter extends BaseAdapter
         public TextView textView1;
         public ProgressBar pb;
         public ImageView iv;
+    }
+    class view2{
+        public TextView textView1,textView2,textView3;
     }
 
     public void setImg(final ImageView im, final ProgressBar pb, final String url){

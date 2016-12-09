@@ -6,6 +6,23 @@ package com.example.tby.test2;
 
 public class Bean {
     String imgurl=null;String title;String content;String url,src;int height;int width;
+    int imgnum;
+    public Bean(){
+        imgurl=null;
+        title = "标题";
+        content="摘要";
+        url=null;
+        src="hit";
+    }
+
+    public void setImgnum(int n){
+        imgnum=n;
+    }
+
+    public int getImgnum(){
+        return imgnum;
+    }
+
     public Bean(String imgurl,String title,String content,String url,String src){
         this.content=content;
         this.imgurl=imgurl;

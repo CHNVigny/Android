@@ -6,6 +6,12 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +30,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         viewPager= (ViewPager) findViewById(R.id.viewPager);
 
-        /*tab= (PagerTabStrip) findViewById(R.id.tab);
-        tab.setTabIndicatorColor(Color.BLUE);
-        tab.setDrawFullUnderline(true);
-        tab.setTextColor(Color.RED);*/
+        final Button button = (Button) findViewById(R.id.titleBtn);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupMenu(button);
+            }
+        });
+
         db=openOrCreateDatabase("bitmap.db", Context.MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS list2(_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                " title text not null, content text not null,url text not null,src text not null,imgurl text null, kind text not null,version INTEGER not null,img BLOB) ");
+        if(db!=null){
+            db.execSQL("delete from list2 where version=0");
+            Log.d("DELETE","version");
+        }
+        //db.execSQL("Drop TABLE list2");
         tab1= (TabLayout) findViewById(R.id.tab1);
         tab1.setTabMode(TabLayout.MODE_SCROLLABLE);
         fragList=new ArrayList<fragmentNews>();
@@ -48,4 +65,40 @@ public class MainActivity extends AppCompatActivity {
         tab1.setupWithViewPager(viewPager);
 
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(db!=null){
+            db.execSQL("delete from list2 where version=0");
+            Log.d("DELETE","version");
+        }
+    }
+
+    private void showPopupMenu(View view) {
+        // View当前PopupMenu显示的相对View的位置
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        // menu布局
+        popupMenu.getMenuInflater().inflate(R.menu.main, popupMenu.getMenu());
+        // menu的item点击事件
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        // PopupMenu关闭事件
+        popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+            @Override
+            public void onDismiss(PopupMenu menu) {
+                Toast.makeText(getApplicationContext(), "关闭PopupMenu", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        popupMenu.show();
+    }
+
 }

@@ -1,9 +1,12 @@
 package com.example.tby.test2;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
@@ -125,6 +128,8 @@ public class ImageLoader {
             @Override
             public void run() {
                 imageView.setTag(urlString);
+                if(urlString==null)
+                    return ;
                 Bitmap bitmap = loadBitmap(urlString,width,height);
                 if (bitmap != null) {
                     //将对应的imageView,url,bitmap封装成一个对象，然后将对象传入Handler
@@ -200,11 +205,6 @@ public class ImageLoader {
 
 
     /**
-     * 加载图片，先不考虑磁盘，我估计手机有问题，因为我前面使用我封装好的
-     * ImageLoader，说是找不到file
-     * 1.从内存中加载
-     * 2.内存中若是没有，则从网上加载
-     *
      * @param urlString
      * @return
      */
@@ -216,6 +216,7 @@ public class ImageLoader {
         }
         else{
             bitmap = loadBitmapFromHttp(urlString,width,height);
+            if(bitmap!=null)
             addBitmapToMemoryCache(hashKeyFromUrl(urlString),bitmap);
         }
 
@@ -249,7 +250,7 @@ public class ImageLoader {
            // Bitmap bitmap=decodeSampledBitmapFromFile(urlString,
            // 80, 80);
             return bitmap;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -350,5 +351,18 @@ public class ImageLoader {
             this.bitmap = bitmap;
             this.pb=pb;
         }
+    }
+
+
+    public boolean isNetworkConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable();
+            }
+        }
+        return false;
     }
 }
