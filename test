@@ -1,0 +1,5 @@
+d={}
+a="title"
+b="tttt"
+d[a]=b
+print d
