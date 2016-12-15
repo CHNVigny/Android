@@ -8,10 +8,7 @@ import android.os.Parcelable;
  */
 
 public class Loader implements Parcelable {
-    ImageLoader i;
-    public Loader(ImageLoader i){
-        this.i=i;
-    }
+
 
     protected Loader(Parcel in) {
     }
@@ -28,9 +25,6 @@ public class Loader implements Parcelable {
         }
     };
 
-    public ImageLoader getI() {
-        return i;
-    }
 
     @Override
     public int describeContents() {

@@ -17,6 +17,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -29,18 +35,37 @@ import java.util.List;
 public class myAdapter extends BaseAdapter
 {
     private List<Bean> beanList;
+    DisplayImageOptions options;
     private LayoutInflater in;
     private boolean mIsListViewIdle = true;
     private ListView mlistview;
     private ImageLoader imageLoader;
     private  SQLiteDatabase db;
-    public myAdapter(List<Bean> beanList, Context i, ListView listView, ImageLoader imageLoader, SQLiteDatabase db){
+    public myAdapter(List<Bean> beanList, Context i, ListView listView,SQLiteDatabase db){
         this.beanList=beanList;
         in= LayoutInflater.from(i);
         this.mlistview=listView;
-        this.imageLoader=imageLoader;
+        imageLoader = ImageLoader.getInstance();
         this.db=db;
     }
+   private void init(){
+       options = new DisplayImageOptions.Builder()
+               .showImageOnLoading(R.drawable.newstitle) //设置图片在下载期间显示的图片
+               .showImageForEmptyUri(R.drawable.newstitle)//设置图片Uri为空或是错误的时候显示的图片
+               .showImageOnFail(R.drawable.newstitle)  //设置图片加载/解码过程中错误时候显示的图片
+               .cacheInMemory(true)//设置下载的图片是否缓存在内存中
+               .cacheOnDisc(true)//设置下载的图片是否缓存在SD卡中
+               .considerExifParams(true)  //是否考虑JPEG图像EXIF参数（旋转，翻转）
+               .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)//设置图片以如何的编码方式显示
+               .bitmapConfig(Bitmap.Config.RGB_565)//设置图片的解码类型//
+//.delayBeforeLoading(int delayInMillis)//int delayInMillis为你设置的下载前的延迟时间
+//设置图片加入缓存前，对bitmap进行设置
+//.preProcessor(BitmapProcessor preProcessor)
+               .resetViewBeforeLoading(true)//设置图片在下载前是否重置，复位
+               .displayer(new RoundedBitmapDisplayer(20))//是否设置为圆角，弧度为多少
+               .displayer(new FadeInBitmapDisplayer(100))//是否图片加载好后渐入的动画时间
+               .build();//构建完成
+   }
 
     @Override
     public int getCount() {
@@ -67,10 +92,9 @@ public class myAdapter extends BaseAdapter
         if (position == 0)
             return 0;
         int p = beanList.get(position).getImgnum();
-
-
         switch (p){
             case 0:return 2;
+            case 1:return 1;
             default:return 1;
         }
 
@@ -88,7 +112,6 @@ public class myAdapter extends BaseAdapter
             case 1:
                 convertView=in.inflate(R.layout.listviewitem,parent,false);
                 v=new view();
-                v.pb= (ProgressBar) convertView.findViewById(R.id.pb1);
                 v.textView1= (TextView) convertView.findViewById(R.id.tv1);
                 v.textView2= (TextView) convertView.findViewById(R.id.tv2);
                 v.textView3= (TextView) convertView.findViewById(R.id.tv3);
@@ -98,7 +121,6 @@ public class myAdapter extends BaseAdapter
             case 0:
                 convertView=in.inflate(R.layout.item2,parent,false);
                 v1=new view1();
-                v1.pb= (ProgressBar) convertView.findViewById(R.id.pb21);
                 v1.textView1= (TextView) convertView.findViewById(R.id.text1);
                 v1.iv= (ImageView) convertView.findViewById(R.id.img1);
                 convertView.setTag(v1);
@@ -133,7 +155,7 @@ public class myAdapter extends BaseAdapter
 
                 if(c.moveToNext()&&(b=c.getBlob(c.getColumnIndex("img")))!=null){
                     v.iv.setImageBitmap(BitmapFactory.decodeByteArray(b,0,b.length));
-                    v.pb.setVisibility(View.GONE);
+                    //v.pb.setVisibility(View.GONE);
                     c.close();
                 }
 
@@ -142,7 +164,7 @@ public class myAdapter extends BaseAdapter
                     c.close();
                     Log.d("urlString", beanList.get(position).imgurl);
                     if (imageLoader != null)
-                        imageLoader.showImageByThreads(v.iv, beanList.get(position).imgurl, v.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
+                        imageLoader.displayImage( beanList.get(position).imgurl, v.iv);
                 }
                 v.textView3.setText(beanList.get(position).src);
                 v.textView1.setText(beanList.get(position).title);
@@ -152,15 +174,12 @@ public class myAdapter extends BaseAdapter
                 c=db.rawQuery("SELECT * from list2 where imgurl like '"+beanList.get(position).imgurl+"'",null);
                 if(c.moveToNext()&&(b=c.getBlob(c.getColumnIndex("img")))!=null){
                     v1.iv.setImageBitmap(BitmapFactory.decodeByteArray(b,0,b.length));
-                    v1.pb.setVisibility(View.GONE);
+                    //v1.pb.setVisibility(View.GONE);
                 }
                 //if(beanList.get(position).imgurl!=null) {
                 else
                 if(imageLoader!=null)
-                    imageLoader.showImageByThreads(v1.iv, beanList.get(position).imgurl,
-                            v1.pb, beanList.get(position).title, beanList.get(position).width, beanList.get(position).getHeight());
-                //setImg(v.iv,v.pb,beanList.get(position).imgurl);
-                //v.iv.setImageResource(bean.get(position).imgId);
+                    imageLoader.displayImage( beanList.get(position).imgurl, v1.iv);  //setImg(v.iv,v.pb,beanList.get(position).imgurl);
                 v1.textView1.setText(beanList.get(position).title);
                 return convertView;
             case 2:

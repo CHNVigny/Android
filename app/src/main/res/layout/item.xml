@@ -2,10 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:orientation="horizontal"
+    android:padding="10dp"
+    android:background="#00000000"
     android:layout_height="80dp">
-
-
     <FrameLayout
+        android:background="@color/lightblue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView
@@ -14,20 +15,19 @@
             android:layout_width="wrap_content"
             android:layout_height="80dp"
             android:src="@mipmap/ic_launcher"/>
-        <ProgressBar
-            android:id="@+id/pb1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
     </FrameLayout>
 
-
-
     <LinearLayout
+        android:background="@color/lightblue"
         android:layout_width="wrap_content"
         android:layout_weight="1"
+        android:padding="3dp"
         android:orientation="vertical"
         android:layout_height="80dp">
         <TextView
+            android:textColor="@color/black"
+            android:background="@color/lightblue"
             android:id="@+id/tv1"
             android:layout_width="match_parent"
             android:gravity="center"
@@ -38,10 +38,12 @@
 
 
         <LinearLayout
+            android:background="@color/lightblue"
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:layout_height="match_parent">
             <TextView
+                android:background="@color/lightblue"
                 android:id="@+id/tv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -52,7 +54,6 @@
                 android:textSize="15sp"/>
 
             <TextView
-
                 android:text="头条"
                 android:lines="1"
                 android:layout_gravity="bottom"

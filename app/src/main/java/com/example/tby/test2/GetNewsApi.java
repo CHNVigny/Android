@@ -18,7 +18,7 @@ public class GetNewsApi {
 
      * @return 返回结果
      */
-    public static String request(String kind) {
+    public static String request(String status,String kind) {
         String httpArg = "page=1&needContent=0&needHtml=0&needAllList=0";
         if(!kind.equals("")){
             httpArg ="channelId="+kind+"&"+ httpArg;
@@ -33,13 +33,13 @@ public class GetNewsApi {
         httpUrl = httpUrl + "?" + httpArg;
 
         try {
-            URL url = new URL(httpUrl);
-            //URL url = new URL("http://192.168.0.2:8080/hello/refresh?status=122&kind=1");
+            //URL url = new URL(httpUrl);
+            URL url = new URL("http://112.74.173.129:8080/hello/refresh?status="+status+"&kind="+kind);
             HttpURLConnection connection = (HttpURLConnection) url
                     .openConnection();
             connection.setRequestMethod("GET");
             // 填入apikey到HTTP header
-            connection.setRequestProperty("apikey",  "57a8924efc96882b140d7ffabb7c1dad");
+            //connection.setRequestProperty("apikey",  "57a8924efc96882b140d7ffabb7c1dad");
             connection.connect();
             InputStream is = connection.getInputStream();
             reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

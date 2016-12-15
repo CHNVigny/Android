@@ -24,11 +24,11 @@ public class AlexListView extends ListView implements OnScrollListener {
 
     private static final String TAG = "PullToRefreshListView";
 
-    private final static int RELEASE_TO_REFRESH = 0; // 松开刷新
-    private final static int PULL_TO_REFRESH = 1; // 下拉刷新
-    private final static int REFRESHING = 2; // 刷新中
-    private final static int DONE = 3; // 完成
-    private final static int LOADING = 4; // 加载中
+    private final int RELEASE_TO_REFRESH = 0; // 松开刷新
+    private final int PULL_TO_REFRESH = 1; // 下拉刷新
+    private final int REFRESHING = 2; // 刷新中
+    private final int DONE = 3; // 完成
+    private final int LOADING = 4; // 加载中
 
     // 实际的padding的距离与界面上偏移距离的比例
     private final static int RATIO = 3;
